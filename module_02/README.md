@@ -59,3 +59,7 @@ In this module, you will extend the basic card drawing app to include player sco
 
 - Click the "DRAW" button to draw a card from the deck.
 - The drawn card will be displayed below the button.
+- Select the player who won the point by choosing the appropriate radio button.
+- Click "Enter" to submit the winner.
+- The progress bars will update based on the players' scores.
+- The first player to reach 3 points wins the game.
