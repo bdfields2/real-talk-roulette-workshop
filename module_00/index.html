@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Introduction to HTML Elements</title>
+    <style>
+      .button {
+        margin: 10px 0;
+        padding: 10px 20px;
+        font-size: 16px;
+      }
+      .progress {
+        width: 100%;
+        background-color: #f3f3f3;
+        border-radius: 5px;
+        margin-bottom: 20px;
+      }
+      .progress-bar {
+        height: 20px;
+        border-radius: 5px;
+      }
+      .player1 {
+        background-color: #4caf50;
+        width: 50%;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Introduction to HTML Elements</h1>
+
+    <h2>Buttons</h2>
+    <button class="button">Click Me</button>
+
+    <h2>Text Inputs</h2>
+    <input type="text" placeholder="Enter your name" />
+
+    <h2>Radio Buttons</h2>
+    <input type="radio" name="choice" value="Option 1" /> Option 1<br />
+    <input type="radio" name="choice" value="Option 2" /> Option 2<br />
+
+    <h2>Progress Bars</h2>
+    <div class="progress">
+      <div class="progress-bar player1"></div>
+    </div>
+
+    <h2>Displaying Text</h2>
+    <div id="displayText">This is a sample text.</div>
+
+    <h2>Click Event Example</h2>
+    <button id="eventButton" class="button">Click to Change Text</button>
+    <div id="eventText">Original Text</div>
+
+    <script>
+      document
+        .getElementById("eventButton")
+        .addEventListener("click", function () {
+          document.getElementById("eventText").innerText =
+            "Text has been changed!";
+        });
+    </script>
+  </body>
+</html>

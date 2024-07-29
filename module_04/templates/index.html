@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Card Game</title>
+    <style>
+      .button {
+        margin: 10px 0;
+        padding: 10px 20px;
+        font-size: 16px;
+      }
+      .progress {
+        width: 100%;
+        background-color: #f3f3f3;
+        border-radius: 5px;
+        margin-bottom: 20px;
+      }
+      .progress-bar {
+        height: 20px;
+        border-radius: 5px;
+      }
+      .player1 {
+        background-color: #4caf50;
+      }
+      .player2 {
+        background-color: #2196f3;
+      }
+      .player3 {
+        background-color: #ff9800;
+      }
+      .player4 {
+        background-color: #9c27b0;
+      }
+      .player5 {
+        background-color: #e91e63;
+      }
+      .player6 {
+        background-color: #00bcd4;
+      }
+      .player7 {
+        background-color: #8bc34a;
+      }
+      .player8 {
+        background-color: #ffeb3b;
+      }
+      .player9 {
+        background-color: #795548;
+      }
+      .player10 {
+        background-color: #607d8b;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Card Game</h1>
+
+    <div id="setup">
+      <h2>Enter Number of Players</h2>
+      <input
+        type="number"
+        id="numPlayers"
+        min="2"
+        max="10"
+        placeholder="Number of Players"
+      /><br />
+      <button id="generateFieldsButton" class="button">Generate Fields</button>
+      <div id="playerFields"></div>
+      <button id="startButton" class="button" style="display: none">
+        Start Game
+      </button>
+    </div>
+
+    <div id="game" style="display: none">
+      <div id="progressBars"></div>
+      <button id="drawButton" class="button">DRAW</button>
+
+      <div class="card-container">
+        <div class="card" id="card">
+          <div class="front">Click to flip</div>
+          <div class="back" id="cardQuestion">Question will appear here</div>
+        </div>
+      </div>
+
+      <h2>Who won the point?</h2>
+      <div id="radioButtons"></div>
+      <button id="enterButton" class="button">Enter</button>
+
+      <div id="winner"></div>
+    </div>
+
+    <script>
+      let players = [];
+      let cardElement = document.getElementById("card");
+      let cardQuestionElement = document.getElementById("cardQuestion");
+
+      const playerColors = [
+        "player1",
+        "player2",
+        "player3",
+        "player4",
+        "player5",
+        "player6",
+        "player7",
+        "player8",
+        "player9",
+        "player10",
+      ];
+
+      document
+        .getElementById("generateFieldsButton")
+        .addEventListener("click", function () {
+          const numPlayers = document.getElementById("numPlayers").value;
+          let playerFieldsHTML = "";
+          for (let i = 0; i < numPlayers; i++) {
+            playerFieldsHTML += `<input type="text" id="playerName${i}" placeholder="Player ${
+              i + 1
+            } Name"><br>`;
+          }
+          document.getElementById("playerFields").innerHTML = playerFieldsHTML;
+          document.getElementById("startButton").style.display = "block";
+        });
+
+      document
+        .getElementById("startButton")
+        .addEventListener("click", function () {
+          players = [];
+          const numPlayers = document.getElementById("numPlayers").value;
+          for (let i = 0; i < numPlayers; i++) {
+            const playerName =
+              document.getElementById(`playerName${i}`).value ||
+              `Player ${i + 1}`;
+            players.push(playerName);
+          }
+
+          fetch("/start_game", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ players: players }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.message === "Game started") {
+                document.getElementById("setup").style.display = "none";
+                document.getElementById("game").style.display = "block";
+                initializeGameInterface(players);
+              }
+            });
+        });
+
+      function initializeGameInterface(players) {
+        let progressBars = "";
+        let radioButtons = "";
+        players.forEach((player, index) => {
+          progressBars += `<div class="progress"><div id="${player}" class="progress-bar ${
+            playerColors[index % playerColors.length]
+          }"></div></div>`;
+          radioButtons += `<input type="radio" name="winner" value="${player}"> ${player}<br>`;
+        });
+        document.getElementById("progressBars").innerHTML = progressBars;
+        document.getElementById("radioButtons").innerHTML = radioButtons;
+      }
+
+      document
+        .getElementById("drawButton")
+        .addEventListener("click", function () {
+          fetch("/draw_card", { method: "POST" })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.message) {
+                cardQuestionElement.innerText = data.message;
+              } else {
+                cardQuestionElement.innerText = data.card;
+              }
+              cardElement.classList.remove("flipped");
+            });
+        });
+
+      cardElement.addEventListener("click", function () {
+        cardElement.classList.add("flipped");
+      });
+
+      document
+        .getElementById("enterButton")
+        .addEventListener("click", function () {
+          const winner = document.querySelector(
+            'input[name="winner"]:checked'
+          ).value;
+          fetch("/submit_winner", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ winner: winner }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.game_over) {
+                document.getElementById(
+                  "winner"
+                ).innerHTML = `<h1 style="color: maroon;">${data.winner} wins!</h1>`;
+                document.getElementById("drawButton").disabled = true;
+                document.getElementById("enterButton").disabled = true;
+              } else {
+                const scores = data.scores;
+                players.forEach((player) => {
+                  document.getElementById(player).style.width =
+                    (scores[player] / 3) * 100 + "%";
+                });
+              }
+            });
+        });
+    </script>
+  </body>
+</html>

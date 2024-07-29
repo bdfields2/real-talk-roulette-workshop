@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Card Game</title>
+    <style>
+      .button {
+        margin: 10px 0;
+        padding: 10px 20px;
+        font-size: 16px;
+      }
+      .progress {
+        width: 100%;
+        background-color: #f3f3f3;
+        border-radius: 5px;
+        margin-bottom: 20px;
+      }
+      .progress-bar {
+        height: 20px;
+        border-radius: 5px;
+      }
+      .player1 {
+        background-color: #4caf50;
+        width: 0%;
+      }
+      .player2 {
+        background-color: #2196f3;
+        width: 0%;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Card Game</h1>
+
+    <div id="setup">
+      <h2>Enter Player Names</h2>
+      <input type="text" id="player1Name" placeholder="Player 1 Name" /><br />
+      <input type="text" id="player2Name" placeholder="Player 2 Name" /><br />
+      <button id="startButton" class="button">Start Game</button>
+    </div>
+
+    <div id="game" style="display: none">
+      <div id="progressBars"></div>
+      <button id="drawButton" class="button">DRAW</button>
+      <div id="card"></div>
+
+      <h2>Who won the point?</h2>
+      <div id="radioButtons"></div>
+      <button id="enterButton" class="button">Enter</button>
+
+      <div id="winner"></div>
+    </div>
+
+    <script>
+      let players = [];
+
+      document
+        .getElementById("startButton")
+        .addEventListener("click", function () {
+          let player1Name =
+            document.getElementById("player1Name").value || "Player 1";
+          let player2Name =
+            document.getElementById("player2Name").value || "Player 2";
+          players = [player1Name, player2Name];
+
+          initializeGameInterface(players);
+          document.getElementById("setup").style.display = "none";
+          document.getElementById("game").style.display = "block";
+        });
+
+      function initializeGameInterface(players) {
+        let progressBars = "";
+        let radioButtons = "";
+        players.forEach((player, index) => {
+          progressBars += `<div class="progress"><div id="${player}" class="progress-bar ${
+            index == 0 ? "player1" : "player2"
+          }"></div></div>`;
+          radioButtons += `<input type="radio" name="winner" value="${player}"> ${player}<br>`;
+        });
+        document.getElementById("progressBars").innerHTML = progressBars;
+        document.getElementById("radioButtons").innerHTML = radioButtons;
+      }
+
+      document
+        .getElementById("drawButton")
+        .addEventListener("click", function () {
+          fetch("/draw_card", { method: "POST" })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.message) {
+                document.getElementById("card").innerText = data.message;
+              } else {
+                document.getElementById("card").innerText = data.card;
+              }
+            });
+        });
+
+      document
+        .getElementById("enterButton")
+        .addEventListener("click", function () {
+          const winner = document.querySelector(
+            'input[name="winner"]:checked'
+          ).value;
+          fetch("/submit_winner", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ winner: winner }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.game_over) {
+                document.getElementById(
+                  "winner"
+                ).innerHTML = `<h1 style="color: maroon;">${data.winner} wins!</h1>`;
+                document.getElementById("drawButton").disabled = true;
+                document.getElementById("enterButton").disabled = true;
+              } else {
+                const scores = data.scores;
+                players.forEach((player) => {
+                  document.getElementById(player).style.width =
+                    (scores[player] / 3) * 100 + "%";
+                });
+              }
+            });
+        });
+    </script>
+  </body>
+</html>
