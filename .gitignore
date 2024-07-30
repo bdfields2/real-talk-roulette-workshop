@@ -82,4 +82,5 @@ instance/
 docs/_build/
 target/
 
-#
+# Ignore questions.txt in module directories
+module_**/questions.txt

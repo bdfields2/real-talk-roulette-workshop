@@ -20,6 +20,7 @@ def load_deck():
 
 @app.route('/')
 def index():
+    load_deck()
     return render_template('index.html')
 
 @app.route('/start_game', methods=['POST'])
@@ -32,6 +33,7 @@ def start_game():
 
 @app.route('/draw_card', methods=['POST'])
 def draw_card():
+    print("Drawing card")
     if not deck:
         return jsonify({'message': 'No more cards in the deck.'})
     card = deck.pop(0)

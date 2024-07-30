@@ -9,6 +9,7 @@ scores = {}
 MAX_SCORE = 3
 
 def load_deck():
+    print("Loading deck")
     global deck
     with open("questions.txt", "r") as questions:
         cards = questions.read().split("\n")

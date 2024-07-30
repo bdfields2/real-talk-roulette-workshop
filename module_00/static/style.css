@@ -1,0 +1,19 @@
+.button {
+  margin: 10px 0;
+  padding: 10px 20px;
+  font-size: 16px;
+}
+.progress {
+  width: 100%;
+  background-color: #f3f3f3;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+.progress-bar {
+  height: 20px;
+  border-radius: 5px;
+}
+.player1 {
+  background-color: #4caf50;
+  width: 50%;
+}
