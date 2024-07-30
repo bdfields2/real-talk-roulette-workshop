@@ -25,7 +25,7 @@ To get started, navigate to the directory of the module you want to work on and 
 2. Navigate to the directory of the module you want to work on:
 
 ```bash
-   cd module1  # or module2, module3, module4
+   cd module_01  # or module_02, module_03, module_04
 ```
 
 3. Follow the instructions in the module's README.md file.
