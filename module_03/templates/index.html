@@ -45,6 +45,20 @@
             document.getElementById("player2Name").value || "Player 2";
           players = [player1Name, player2Name];
 
+          fetch("/start_game", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ players: players }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.message === "Game started") {
+                document.getElementById("setup").style.display = "none";
+                document.getElementById("game").style.display = "block";
+                initializeGameInterface(players);
+              }
+            });
+
           initializeGameInterface(players);
           document.getElementById("setup").style.display = "none";
           document.getElementById("game").style.display = "block";
